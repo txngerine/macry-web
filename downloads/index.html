@@ -35,6 +35,7 @@
       border-radius: 14px;
       padding: 36px;
     }
+    .icon { width: 72px; height: 72px; border-radius: 16px; margin-bottom: 16px; display: block; }
     h1 { margin: 0 0 4px; font-size: 26px; }
     .version { color: var(--muted); margin: 0 0 24px; font-family: var(--mono); font-size: 13px; }
     .buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
@@ -59,10 +60,20 @@
     }
     .checksums { font-family: var(--mono); font-size: 12px; color: var(--muted); word-break: break-all; }
     .checksums div { margin-bottom: 4px; }
+    .notice {
+      background: rgba(255, 196, 0, 0.1);
+      border: 1px solid rgba(255, 196, 0, 0.35);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 24px;
+    }
+    .notice p:first-child { margin-top: 0; }
+    .notice ol { margin-bottom: 0; }
   </style>
 </head>
 <body>
   <div class="card">
+    <img class="icon" src="icon.png" alt="Macry icon" />
     <h1>Macry</h1>
     <p class="version">Version 1.0.0 · requires macOS 14 or later</p>
 
@@ -71,24 +82,28 @@
       <a class="button secondary" href="latest/Macry.zip">Download .zip</a>
     </div>
 
+    <div class="notice">
+      <p>
+        ⚠️ <strong>macOS will say Macry "cannot be opened because Apple cannot
+        verify it is free of malware."</strong> This is expected — Macry isn't
+        notarized by Apple yet, but it's safe to run. Do one of these once,
+        after installing:
+      </p>
+      <ol>
+        <li>Right-click (or Control-click) <strong>Macry.app</strong> in
+          Applications and choose <strong>Open</strong>, then confirm in the
+          dialog that appears, <strong>or</strong></li>
+        <li>Run <code>xattr -cr /Applications/Macry.app</code> in Terminal.</li>
+      </ol>
+    </div>
+
     <h2>Installing</h2>
     <p>Open the <code>.dmg</code> and drag Macry into Applications.</p>
 
-    <h2>First launch</h2>
-    <p>
-      Macry is signed with an ad-hoc signature, not notarized by Apple, so
-      Gatekeeper will warn that it's from an unidentified developer.
-    </p>
-    <ol>
-      <li>Right-click (or Control-click) <strong>Macry.app</strong> and choose
-        <strong>Open</strong>, then confirm in the dialog, <strong>or</strong></li>
-      <li>Run <code>xattr -cr /Applications/Macry.app</code> in Terminal after installing.</li>
-    </ol>
-
     <h2>Checksums (v1.0.0)</h2>
     <div class="checksums">
-      <div>Macry-1.0.0.dmg: f024b4b68662940cb8f138edc88b892723b638c239b7f261ce31958d707db6e9</div>
-      <div>Macry-1.0.0.zip: d0701db079fc538dd887e70f529e6b39a2e468beeefc5c1d9547f735e3413ec0</div>
+      <div>Macry-1.0.0.dmg: 002afe6efe5a69018f5698291205ad5b612af50aa42180f6593152e2f9744f9c</div>
+      <div>Macry-1.0.0.zip: e8e24e230e8a80f5a36192441defaa67dcb68a29e3a760fc2319591d28fbe502</div>
     </div>
   </div>
 </body>
