@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Macry</title>
+<style>
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+
+/* layout: asymmetric hero (copy + live scan-card mockup), flat divided feature
+   list (no cards), a to-scale before/after disk bar, terminal-styled build block */
+:root {
+  --bg: #eef0e6;
+  --bg-raised: #ffffff;
+  --ink: #16211a;
+  --ink-muted: #57664f;
+  --line: #d6d8c4;
+  --accent: #1f7a4d;
+  --accent-ink: #ffffff;
+  --gold: #c8912e;
+  --coral: #c05a3c;
+  --teal: #2a7f78;
+  --neutral-fill: #c4c7ae;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11180f;
+    --bg-raised: #1a241b;
+    --ink: #eef3ea;
+    --ink-muted: #9fb097;
+    --line: #2d3a28;
+    --accent: #6fcf97;
+    --accent-ink: #0c1810;
+    --gold: #e3ab57;
+    --coral: #e3805e;
+    --teal: #57b4ab;
+    --neutral-fill: #3c4a37;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11180f;
+  --bg-raised: #1a241b;
+  --ink: #eef3ea;
+  --ink-muted: #9fb097;
+  --line: #2d3a28;
+  --accent: #6fcf97;
+  --accent-ink: #0c1810;
+  --gold: #e3ab57;
+  --coral: #e3805e;
+  --teal: #57b4ab;
+  --neutral-fill: #3c4a37;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { background: var(--bg); }
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+}
+.display {
+  font-family: 'Bricolage Grotesque', 'IBM Plex Sans', sans-serif;
+  font-weight: 700;
+  text-wrap: balance;
+  letter-spacing: -0.01em;
+}
+.mono { font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; }
+.tabular { font-variant-numeric: tabular-nums; }
+a { color: inherit; }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  color: var(--ink-muted);
+}
+.tag::before { content: "["; }
+.tag::after { content: "]"; }
+
+.band {
+  padding-block: 60px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  position: relative;
+}
+.wrap { max-width: 880px; margin: 0 auto; }
+
+/* ---- hero ---- */
+.hero { padding-top: 64px; overflow: hidden; }
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -120px;
+  right: -140px;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 22%, transparent) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 48px;
+  align-items: center;
+  position: relative;
+}
+.hero-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.hero-top img.icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  flex-shrink: 0;
+}
+.hero-top .wordmark {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.hero h1 {
+  font-size: clamp(2.1rem, 4.6vw, 3rem);
+  line-height: 1.05;
+  margin: 0 0 16px;
+}
+.hero p.lede {
+  max-width: 46ch;
+  font-size: 1.08rem;
+  color: var(--ink-muted);
+  margin: 0 0 30px;
+}
+
+.cta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+}
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary svg { width: 17px; height: 17px; flex-shrink: 0; }
+.btn-secondary { background: transparent; border-color: var(--line); color: var(--ink); }
+.btn-secondary:hover, .btn-primary:hover { filter: brightness(1.06); }
+.cta-note { margin-top: 12px; font-size: 0.82rem; color: var(--ink-muted); }
+
+/* ---- scan card mockup ---- */
+.scan-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  min-width: 0;
+  box-shadow: 0 20px 44px rgba(0,0,0,0.10);
+}
+.scan-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.scan-card-head .tag { margin: 0; }
+.scan-card-head .sprite { width: 34px; }
+.scan-total {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: 2.2rem;
+  line-height: 1;
+  margin: 0 0 2px;
+}
+.scan-total small { font-size: 0.95rem; font-weight: 600; color: var(--ink-muted); }
+.scan-sub { margin: 0 0 18px; font-size: 0.85rem; color: var(--ink-muted); }
+
+.scan-rows { display: flex; flex-direction: column; gap: 10px; }
+.scan-row {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+}
+.scan-row .swatch { width: 10px; height: 10px; border-radius: 3px; }
+.scan-row .amount { font-family: 'IBM Plex Mono', monospace; color: var(--ink-muted); }
+.scan-bar {
+  margin-top: 16px;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  background: var(--neutral-fill);
+}
+.scan-bar span { height: 100%; }
+
+/* ---- feature list (flat, divided — not cards) ---- */
+.band-features { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.features-head { margin-bottom: 36px; max-width: 54ch; }
+.features-head h2 { font-size: 1.7rem; margin: 10px 0 10px; }
+.features-head p { color: var(--ink-muted); margin: 0; }
+
+.feature-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 40px;
+}
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding-block: 20px;
+  border-top: 1px solid var(--line);
+  min-width: 0;
+}
+.feature-list .feature-item:nth-child(1),
+.feature-list .feature-item:nth-child(2) { border-top: none; }
+.feature-item .sprite { width: 34px; margin-top: 2px; }
+.feature-item h3 { font-size: 1rem; margin: 0 0 4px; }
+.feature-item p { margin: 0; color: var(--ink-muted); font-size: 0.9rem; }
+
+/* ---- origin quote ---- */
+.band-origin { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--bg-raised); }
+.origin-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 16px;
+}
+.origin-row .sprite { width: 64px; }
+.origin-text {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.4;
+  max-width: 58ch;
+}
+
+/* ---- before / after disk bar (to scale) ---- */
+.disk-head { max-width: 58ch; margin-bottom: 30px; }
+.disk-head h2 { font-size: 1.6rem; margin: 10px 0 10px; }
+.disk-head p { color: var(--ink-muted); margin: 0; }
+
+.disk-row { margin-bottom: 22px; }
+.disk-row-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  margin-bottom: 8px;
+}
+.disk-row-label strong { color: var(--ink); font-weight: 600; }
+.disk-bar {
+  height: 28px;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  background: var(--neutral-fill);
+  border: 1px solid var(--line);
+}
+.disk-bar span { height: 100%; display: block; }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 22px;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+}
+.legend-item { display: flex; align-items: center; gap: 7px; }
+.legend-item .swatch { width: 10px; height: 10px; border-radius: 3px; }
+
+.reclaimed {
+  margin-top: 26px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.reclaimed .sprite { width: 56px; }
+.reclaimed strong { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.3rem; }
+
+/* ---- requirements ---- */
+.band-build { border-bottom: 1px solid var(--line); }
+.band-build h3 {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  margin: 0 0 12px;
+}
+.band-build ul { margin: 0; padding-left: 18px; }
+.band-build li { margin-bottom: 7px; }
+
+/* ---- footer ---- */
+.band-footer { padding-block: 32px; }
+.footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--ink-muted);
+  font-size: 0.84rem;
+}
+.footer-row a { text-decoration: underline; text-underline-offset: 2px; }
+
+/* ---- sprites: each asset is an 8-frame strip, exactly like the app's mascot ---- */
+.sprite {
+  background-repeat: no-repeat;
+  background-size: 800% 100%;
+  background-position: 0 0;
+  flex-shrink: 0;
+  display: block;
+}
+.sprite.animate { animation: spriteplay steps(8) infinite; }
+@keyframes spriteplay { from { background-position: 0% 0; } to { background-position: 100% 0; } }
+.sprite-calm { background-image: url(frog_calm.png); aspect-ratio: 300 / 295; }
+.sprite-bloated { background-image: url(frog_bloated.png); aspect-ratio: 282 / 322; }
+.sprite-searching { background-image: url(frog_searching.png); aspect-ratio: 278 / 297; }
+.sprite-eating { background-image: url(frog_eating.png); aspect-ratio: 282 / 312; }
+.sprite-sideeye { background-image: url(frog_sideeye.png); aspect-ratio: 443 / 300; }
+.sprite-breathing { background-image: url(frog_breathing.png); aspect-ratio: 294 / 343; }
+.sprite-blushing { background-image: url(frog_blushing.png); aspect-ratio: 278 / 312; }
+
+@media (max-width: 760px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .feature-list { grid-template-columns: 1fr; }
+  .feature-list .feature-item:nth-child(2) { border-top: 1px solid var(--line); }
+  .origin-row { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 480px) {
+  .hero { padding-top: 44px; }
+  .band { padding-block: 44px; }
+}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+</head>
+<body>
+
+<div class="hero band">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="hero-top">
+        <img class="icon" src="icon.png" alt="Macry app icon">
+        <span class="wordmark">Macry</span>
+      </div>
+      <p class="tag">macOS 14+ · Apple Silicon &amp; Intel</p>
+      <h1 class="display">Your disk called. It wants its life back.</h1>
+      <p class="lede">Macry hunts down the caches, duplicates, and mystery app leftovers hoarding your gigabytes, then lets you clear them out with one click. No bloatware, no "optimizer" nonsense — just a frog with a broom.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/txngerine/poppy/releases/latest" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+          Download for Mac
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/txngerine/poppy" target="_blank" rel="noopener">View source</a>
+      </div>
+      <p class="cta-note">Free and open source.</p>
+    </div>
+
+    <div class="scan-card">
+      <div class="scan-card-head">
+        <span class="tag">not a drill</span>
+        <div class="sprite sprite-blushing animate" role="img" aria-label="Macry's frog mascot, pleased with the result"></div>
+      </div>
+      <p class="scan-total tabular">105 GB <small>reclaimed</small></p>
+      <p class="scan-sub">512 GB SSD · MacBook Pro · mild hoarding tendencies</p>
+      <div class="scan-rows">
+        <div class="scan-row">
+          <span class="swatch" style="background: var(--gold)"></span>
+          <span>Cache &amp; logs</span>
+          <span class="amount tabular">46 GB</span>
+        </div>
+        <div class="scan-row">
+          <span class="swatch" style="background: var(--coral)"></span>
+          <span>Duplicate files</span>
+          <span class="amount tabular">38 GB</span>
+        </div>
+        <div class="scan-row">
+          <span class="swatch" style="background: var(--teal)"></span>
+          <span>App leftovers</span>
+          <span class="amount tabular">21 GB</span>
+        </div>
+      </div>
+      <div class="scan-bar" aria-hidden="true">
+        <span style="width: 43.8%; background: var(--gold)"></span>
+        <span style="width: 36.2%; background: var(--coral)"></span>
+        <span style="width: 20%; background: var(--teal)"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="band band-features">
+  <div class="wrap">
+    <div class="features-head">
+      <p class="tag">the lineup</p>
+      <h2 class="display">One app, every corner of your disk Macry refuses to leave alone.</h2>
+      <p>Six screens, zero mercy for junk.</p>
+    </div>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="sprite sprite-blushing card-icon" role="img" aria-label="Macry's frog mascot, pleased"></div>
+        <div>
+          <h3>Dashboard</h3>
+          <p>The big picture, minus the doom-scrolling: free space, the worst offenders, and quick fixes, no Terminal required.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="sprite sprite-searching card-icon" role="img" aria-label="Macry's frog mascot, searching"></div>
+        <div>
+          <h3>Smart Scan</h3>
+          <p>Caches, logs, temp files, and that one browser profile from 2019 — found and ranked by how embarrassing they are.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="sprite sprite-sideeye card-icon" role="img" aria-label="Macry's frog mascot, giving side-eye"></div>
+        <div>
+          <h3>Cleanup Review</h3>
+          <p>Nothing dies without your blessing — Macry shows you the list before anything actually goes.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="sprite sprite-breathing card-icon" role="img" aria-label="Macry's frog mascot, relaxed"></div>
+        <div>
+          <h3>Storage browser</h3>
+          <p>Point, click, and judge your own folder structure — sortable by size, name, or date modified.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="sprite sprite-bloated card-icon" role="img" aria-label="Macry's frog mascot, bloated"></div>
+        <div>
+          <h3>Applications</h3>
+          <p>What every app actually weighs, leftovers included, long after you forgot you'd installed it.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="sprite sprite-eating card-icon" role="img" aria-label="Macry's frog mascot, eating"></div>
+        <div>
+          <h3>Duplicates</h3>
+          <p>Found three copies of the same vacation photo? So did Macry. Keep one, set the other two free.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="band band-origin">
+  <div class="wrap">
+    <p class="tag">why macry exists</p>
+    <div class="origin-row">
+      <div class="sprite sprite-bloated animate" role="img" aria-label="Macry's frog mascot, stuffed full"></div>
+      <p class="origin-text display">"My Mac kept lagging, and it was always the same culprits — bloated caches, forgotten duplicates, leftovers from apps I uninstalled years ago. I got tired of hunting them down by hand, so I built a frog to do it for me."</p>
+    </div>
+  </div>
+</div>
+
+<div class="band">
+  <div class="wrap">
+    <div class="disk-head">
+      <p class="tag">drawn to scale, we promise</p>
+      <h2 class="display">The same 512 GB. Dramatically less full.</h2>
+      <p>No magic, no upsell — just years of "I'll clean that later" finally dealt with.</p>
+    </div>
+
+    <div class="disk-row">
+      <div class="disk-row-label"><strong>Before</strong><span class="tabular">93 GB free of 512 GB</span></div>
+      <div class="disk-bar" aria-hidden="true">
+        <span style="width: 61.3%; background: var(--neutral-fill)"></span>
+        <span style="width: 9%; background: var(--gold)"></span>
+        <span style="width: 7.4%; background: var(--coral)"></span>
+        <span style="width: 4.1%; background: var(--teal)"></span>
+        <span style="width: 18.2%; background: var(--line)"></span>
+      </div>
+    </div>
+    <div class="disk-row">
+      <div class="disk-row-label"><strong>After</strong><span class="tabular">198 GB free of 512 GB</span></div>
+      <div class="disk-bar" aria-hidden="true">
+        <span style="width: 61.3%; background: var(--neutral-fill)"></span>
+        <span style="width: 38.7%; background: var(--accent)"></span>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span class="legend-item"><span class="swatch" style="background: var(--neutral-fill)"></span>Your files &amp; apps</span>
+      <span class="legend-item"><span class="swatch" style="background: var(--gold)"></span>Cache &amp; logs</span>
+      <span class="legend-item"><span class="swatch" style="background: var(--coral)"></span>Duplicates</span>
+      <span class="legend-item"><span class="swatch" style="background: var(--teal)"></span>App leftovers</span>
+      <span class="legend-item"><span class="swatch" style="background: var(--accent)"></span>Free space</span>
+    </div>
+
+    <div class="reclaimed">
+      <div class="sprite sprite-calm animate" role="img" aria-label="Macry's frog mascot, calm and relieved"></div>
+      <p style="margin:0; color: var(--ink-muted);"><strong>105 GB</strong> back where it belongs: yours.</p>
+    </div>
+  </div>
+</div>
+
+<div class="band band-build">
+  <div class="wrap">
+    <h3>Requirements</h3>
+    <ul>
+      <li>macOS 14.0 or later</li>
+      <li>Apple Silicon or Intel</li>
+    </ul>
+  </div>
+</div>
+
+<div class="band band-footer">
+  <div class="wrap">
+    <div class="footer-row">
+      <span>Macry — built by someone who really did not want to buy more storage.</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
