@@ -1,0 +1,2 @@
+55fa11d3483c8d887a94be06af339c4ec52c994a93ee2ad505e427b8f0aaec47  Macry-1.0.1-universal.dmg
+426bb57568ddd84f338e0316e165adfc5bdc183eee92eb5052b3669fa1f6fad2  Macry-1.0.1-universal.zip
